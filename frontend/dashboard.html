@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>صراحة | Sarahah</title>
+<link rel="icon" href="logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=5">
+</head>
+<body>
+<header id="site-header"></header>
+<main class="wrap">
+  <section class="card">
+    <h2 data-i18n="d_share"></h2>
+    <p class="hint" data-i18n="d_hint"></p>
+    <div class="share">
+      <input id="link" readonly aria-label="link">
+      <button class="btn" id="copy" type="button" data-i18n="copy"></button>
+    </div>
+  </section>
+  <div class="head"><h2 data-i18n="d_in"></h2><span class="hint" id="count"></span></div>
+  <div class="list" id="list"></div>
+</main>
+<script src="app.js"></script>
+<script src="i18n.js"></script>
+<script src="header.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+if (!getToken()) location.href = "login.html";
+let items = [];
+
+$("copy").onclick = async () => {
+  await navigator.clipboard.writeText($("link").value);
+  $("copy").textContent = t("copied");
+  setTimeout(() => $("copy").textContent = t("copy"), 1500);
+};
+
+function render() {
+  const list = $("list");
+  list.replaceChildren();
+  $("count").textContent = items.length ? items.length + " " + t("d_count") : "";
+  if (!items.length) {
+    const d = document.createElement("div");
+    d.className = "empty";
+    d.textContent = t("d_empty");
+    list.append(d);
+    return;
+  }
+  for (const m of items) {
+    const box = document.createElement("article");
+    box.className = "msg";
+    const s = document.createElement("strong");
+    s.textContent = m.sender_name || t("anon");
+    const p = document.createElement("p");
+    p.textContent = m.text;
+    const tm = document.createElement("time");
+    tm.textContent = new Date(m.created_at).toLocaleString(LANG);
+    box.append(s, p, tm);
+    list.append(box);
+  }
+}
+window.onLang = render;
+setLang(LANG);
+
+(async () => {
+  try {
+    const me = await api("/me");
+    $("link").value = location.origin + "/u.html?u=" + me.username;
+  } catch (e) {
+    if (e.status === 401) { localStorage.removeItem("token"); location.href = "login.html"; }
+    return;
+  }
+  try { items = (await api("/messages")).items; render(); }
+  catch { $("list").textContent = t("d_err"); }
+})();
+</script>
+</body>
+</html>

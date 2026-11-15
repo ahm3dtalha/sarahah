@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>صراحة | Sarahah</title>
+<link rel="icon" href="logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=5">
+</head>
+<body>
+
+<header id="site-header"></header>
+
+<main class="center" style="min-height:80vh">
+  <div class="panel">
+    <h1 class="brand" data-i18n="brand"></h1>
+    <p class="tagline" data-i18n="tag"></p>
+    <div class="card">
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" id="t-login" aria-selected="true" data-i18n="tab_l"></button>
+        <button type="button" role="tab" id="t-register" aria-selected="false" data-i18n="tab_r"></button>
+      </div>
+      <form id="form">
+        <div id="name-box" class="hidden">
+          <label for="username" data-i18n="l_u"></label>
+          <input id="username" name="username" autocomplete="username" dir="ltr" placeholder="ahmed_99">
+        </div>
+        <label for="email" data-i18n="l_e"></label>
+        <input id="email" name="email" type="email" autocomplete="email" dir="ltr" required>
+        <label for="password" data-i18n="l_p"></label>
+        <input id="password" name="password" type="password" minlength="8" autocomplete="current-password" required>
+        <p class="err" id="err" role="alert"></p>
+        <button class="btn wide" id="submit"></button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<script src="app.js"></script>
+<script src="i18n.js"></script>
+<script src="header.js"></script>
+<script>
+if (getToken()) location.href = "dashboard.html";
+
+const $ = id => document.getElementById(id);
+let mode = new URLSearchParams(location.search).get("m") === "register" ? "register" : "login";
+
+function setMode(m) {
+  mode = m;
+  $("t-login").setAttribute("aria-selected", m === "login");
+  $("t-register").setAttribute("aria-selected", m === "register");
+  $("name-box").classList.toggle("hidden", m === "login");
+  $("username").required = m === "register";
+  $("submit").textContent = t(m === "login" ? "sub_l" : "sub_r");
+  $("err").textContent = "";
+}
+$("t-login").onclick = () => setMode("login");
+$("t-register").onclick = () => setMode("register");
+window.onLang = () => setMode(mode);
+
+$("form").addEventListener("submit", async e => {
+  e.preventDefault();
+  $("err").textContent = "";
+  $("submit").disabled = true;
+  const f = Object.fromEntries(new FormData(e.target));
+  try {
+    if (mode === "register") {
+      await api("/auth/register", { method: "POST",
+        body: JSON.stringify({ username: f.username, email: f.email, password: f.password }) });
+    }
+    const res = await api("/auth/login", { method: "POST",
+      body: JSON.stringify({ email: f.email, password: f.password }) });
+    localStorage.setItem("token", res.token);
+    location.href = "dashboard.html";
+  } catch (x) {
+    $("err").textContent = x.message;
+    $("submit").disabled = false;
+  }
+});
+
+setLang(LANG);
+</script>
+</body>
+</html>

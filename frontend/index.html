@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>صراحة | Sarahah</title>
+<link rel="icon" href="logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=5">
+</head>
+<body>
+
+<header id="site-header"></header>
+
+<main>
+  <section class="hero">
+    <div>
+      <h1 data-i18n="hero_t"></h1>
+      <p data-i18n="hero_s"></p>
+      <div class="cta">
+        <a class="btn" href="login.html?m=register" data-i18n="cta1"></a>
+        <a class="btn ghost" href="#how" data-i18n="cta2"></a>
+      </div>
+    </div>
+    <div class="bubbles" aria-hidden="true">
+      <div class="bubble"><b data-i18n="anon"></b><span data-i18n="m1"></span></div>
+      <div class="bubble"><b data-i18n="anon"></b><span data-i18n="m2"></span></div>
+    </div>
+  </section>
+
+  <section class="sec" id="features">
+    <h2 data-i18n="f_t"></h2>
+    <div class="grid">
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></div>
+        <h3 data-i18n="f1t"></h3>
+        <p data-i18n="f1d"></p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></div>
+        <h3 data-i18n="f2t"></h3>
+        <p data-i18n="f2d"></p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <h3 data-i18n="f3t"></h3>
+        <p data-i18n="f3d"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="how">
+    <h2 data-i18n="h_t"></h2>
+    <div class="grid steps">
+      <div class="card step" data-i18n="s1"></div>
+      <div class="card step" data-i18n="s2"></div>
+      <div class="card step" data-i18n="s3"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site" data-i18n="foot"></footer>
+
+<script src="app.js"></script>
+<script src="i18n.js"></script>
+<script src="header.js"></script>
+<script>setLang(LANG);</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+name: test
+on: push
+jobs:
+  hello:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+         echo "hello from my ec2"
+         hostname
+         whoami
