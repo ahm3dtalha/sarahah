@@ -13,6 +13,7 @@ variable "s3_list" {
 }
 variable "dl_queue" {
     type = string
+    default = "my-default-dl-queue"
 }
 variable "main_queue" {
   
