@@ -49,9 +49,13 @@ variable "range_key_type" {
 
 variable "global_secondary_indexes" {
     type = list(object({
-    name          = string
-    hash_key      = string
-    hash_key_type = optional(string, "S")
+    name              = string
+    hash_key          = string
+    hash_key_type     = optional(string, "S")
+    range_key         = optional(string)
+    range_key_type    = optional(string, "S")
+    projection_type   = optional(string, "ALL")
+    non_key_attributes = optional(list(string), [])
     }))
     default = []
 }
