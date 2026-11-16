@@ -7,6 +7,7 @@ resource "aws_ecr_repository" "app_repo" {
   }
 }
 
+
 # إخراج رابط المستودع لنستحقه لاحقاً في الـ Workflow
 output "ecr_repository_url" {
   value       = aws_ecr_repository.app_repo.repository_url
