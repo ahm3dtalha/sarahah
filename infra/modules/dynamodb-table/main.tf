@@ -28,6 +28,7 @@ resource "aws_dynamodb_table" "this" {
       projection_type = "ALL"
     }
   }
+  
 
   dynamic "ttl" {
     for_each = var.ttl_enabled ? [1] : []
