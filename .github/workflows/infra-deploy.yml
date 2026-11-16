@@ -34,7 +34,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-southeast-2  # المنطقة التي نجحت معك
 
-      # 4. تهيئة التيررافوم
+      # 4. تهيئة 
       - name: Terraform Init
         run: terraform init
 
