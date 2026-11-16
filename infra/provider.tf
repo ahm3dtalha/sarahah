@@ -5,6 +5,7 @@ terraform {
       version = "~> 5.0"
     }
   }
+  
   backend "s3" {
     bucket = "my-terraform-state-bucket-ahmad-2026"
     key     = "terraform.tfstate"
