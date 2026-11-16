@@ -39,5 +39,5 @@ jobs:
         run: terraform init
 
       # 5. تطبيق التغييرات على AWS تلقائياً
-      - name: Terraform Apply
+      - name: Terraform des
         run: terraform destroy -auto-approve -var="use_localstack=false" -var="aws_region=ap-southeast-2"
