@@ -1,6 +1,6 @@
 data "archive_file" "lambda_zip" {
   type = "zip"
-  source_dir = "${path.module}/lambda"
+  source_dir = "${path.module}/../application/lambda"
   output_path =   "${path.module}/lambda.zip"
   excludes = [ "lambda_function.py" ]
 }

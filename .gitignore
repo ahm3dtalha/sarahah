@@ -9,3 +9,4 @@ __pycache__/
 *.pyc
 lambda.zip
 test.txt
+volume/
