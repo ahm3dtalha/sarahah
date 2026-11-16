@@ -5,7 +5,6 @@ import boto3
 
 table = boto3.resource("dynamodb").Table(os.environ["MESSAGES_TABLE"])
 
-
 def handler(event, context):
     failures = []
     for record in event["Records"]:
