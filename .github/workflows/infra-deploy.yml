@@ -1,43 +1,57 @@
 name: Deploy Infrastructure
 
-# تحديد متى يعمل هذا الخط (Trigger)
 on:
   push:
     branches:
-      - main  # أو master (حسب اسم فرعك الأساسي)
+      - main
     paths:
-      - 'infra/**'  # لن يعمل إلا إذا حدث تغيير داخل مجلد infra فقط
+      - 'infra/**'
+      - '.github/workflows/infra-deploy.yml'
 
 jobs:
   terraform-deploy:
     runs-on: ubuntu-latest
-
-    # جعل مسار التنفيذ الافتراضي هو مجلد الـ infra مباشرة
     defaults:
       run:
         working-directory: infra
 
     steps:
-      # 1.سحب كود المشروع من جيثب
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 2. تثبيت أداة Terraform على سيرفر الجيثب الوهمي
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      # 3. إعداد بيانات الاتصال بسحابة AWS بأمان عبر الـ Secrets
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-southeast-2  # المنطقة التي نجحت معك
+          aws-region: ap-southeast-2
 
-      # 4. تهيئة 
+      # 1. التحقق من وجود سلة S3 للـ State وإنشاؤها تلقائياً إن لم تكن موجودة
+      - name: Ensure Terraform State Bucket Exists
+        run: |
+          BUCKET_NAME="my-terraform-state-bucket-ahmad-2026"
+          REGION="ap-southeast-2"
+          
+          if aws s3api head-bucket --bucket "$BUCKET_NAME" 2>/dev/null; then
+            echo "S3 Bucket '$BUCKET_NAME' already exists."
+          else
+            echo "S3 Bucket '$BUCKET_NAME' does not exist. Creating it now..."
+            if [ "$REGION" = "us-east-1" ]; then
+              aws s3api create-bucket --bucket "$BUCKET_NAME"
+            else
+              aws s3api create-bucket --bucket "$BUCKET_NAME" --region "$REGION" --create-bucket-configuration LocationConstraint="$REGION"
+            fi
+            echo "S3 Bucket created successfully."
+          fi
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # 2. التهيئة الآمنة للـ Backend والتشغيل التلقائي
       - name: Terraform Init
         run: terraform init
 
-      # 5. تطبيق التغييرات على AWS تلقائياً
-      - name: Terraform apply
+      - name: Terraform Apply
         run: terraform apply -auto-approve -var="use_localstack=false" -var="aws_region=ap-southeast-2"
+
+

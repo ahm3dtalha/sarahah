@@ -5,6 +5,11 @@ terraform {
       version = "~> 5.0"
     }
   }
+  backend "s3" {
+    bucket = "my-terraform-state-bucket-ahmad-2026"
+    key     = "terraform.tfstate"
+    region  = "ap-southeast-2"
+  }
 }
 
 variable "use_localstack" {
