@@ -1,4 +1,4 @@
-name: Deploy Application
+name: Deploy FastAPI App to ECR
 
 on:
   push:
@@ -6,9 +6,10 @@ on:
       - main
     paths:
       - 'application/**'
+      - '.github/workflows/app-deploy.yml'
 
 jobs:
-  build-and-push:
+  build-and-push-app:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -25,14 +26,14 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push image to Amazon ECR
+      - name: Build, tag, and push FastAPI image to ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: fastapi-app
           IMAGE_TAG: latest
         run: |
-          # بناء الصورة مع تحديد مسار الـ Dockerfile وسياق المجلد (Context)
+          # بناء الصورة بناءً على سياق مجلد التطبيق وملف الـ Dockerfile الموجود هناك
           docker build -f ./application/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./application
           
-          # رفع الصورة إلى مستودع ECR في AWS
+          # دفع الصورة إلى مستودع ECR على AWS
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
