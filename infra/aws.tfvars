@@ -1,2 +1,2 @@
 use_localstack = false
-aws_region = "eu-west-1"
+aws_region = "ap-southeat-2"
