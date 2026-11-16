@@ -18,7 +18,7 @@ jobs:
         working-directory: infra
 
     steps:
-      # 1. سحب كود المشروع من جيثب
+      # 1.سحب كود المشروع من جيثب
       - name: Checkout Repository
         uses: actions/checkout@v4
 
