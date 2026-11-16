@@ -10,6 +10,23 @@ resource "aws_security_group" "ec2_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  
+  ingress {
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+  ingress {
+    description = "HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
 
   ingress {
     description = "FastAPI"
@@ -122,7 +139,7 @@ resource "aws_instance" "fastapi_server" {
               aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_URL
 
               # تشغيل حاوية التطبيق وتمرير متغيرات البيئة
-              docker run -d -p 8000:8000 \
+              docker run -d -p 80:8000 \
                 -e AWS_REGION="$REGION" \
                 -e SQS_QUEUE_ARN="${module.messages_queue.main_arn}" \
                 -e SQS_DLQ_ARN="${module.messages_queue.dlq_arn}" \
