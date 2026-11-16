@@ -40,4 +40,4 @@ jobs:
 
       # 5. تطبيق التغييرات على AWS تلقائياً
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve -var="use_localstack=false" -var="aws_region=ap-southeast-2"
