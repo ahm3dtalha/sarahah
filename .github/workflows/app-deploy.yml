@@ -1,4 +1,4 @@
-name: Build and Push FastAPI to ECR
+name: deploy Application
 
 on:
   push:
