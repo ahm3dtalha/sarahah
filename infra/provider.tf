@@ -7,22 +7,40 @@ terraform {
   }
 }
 
-# تكوين المزود (Provider) ليعمل مع LocalStack محلياً
-provider "aws" {
-  region                      = "us-east-1"
-  access_key                  = "mock_access_key"
-  secret_key                  = "mock_secret_key"
-  s3_use_path_style           = true
-  skip_credentials_validation = true
-  skip_metadata_api_check     = true
-  skip_requesting_account_id  = true
+variable "use_localstack" {
+  type    = bool
+  default = true
+}
 
-  # توجيه خدمة S3 إلى LocalStack بدل خوادم AWS الحقيقية
-  endpoints {
-    s3 = "http://localhost:4566"
-    dynamodb = "http://localhost:4566"
-    sqs = "http://localhost:4566" 
-    iam = "http://localhost:4566" 
-    lambda = "http://localhost:4566" 
+variable "aws_region" {
+  type    = string
+  default = "us-east-1"
+}
+
+locals {
+  ls = "http://localhost:4566"
+}
+
+provider "aws" {
+  region = var.aws_region
+
+  # القيم التالية لـ LocalStack فقط، وعلى AWS تُترك لسلسلة بيانات الاعتماد الحقيقية
+  access_key                  = var.use_localstack ? "test" : null
+  secret_key                  = var.use_localstack ? "test" : null
+  skip_credentials_validation = var.use_localstack
+  skip_metadata_api_check     = var.use_localstack
+  skip_requesting_account_id  = var.use_localstack
+  s3_use_path_style           = var.use_localstack
+
+  dynamic "endpoints" {
+    for_each = var.use_localstack ? [1] : []
+    content {
+      dynamodb = local.ls
+      sqs      = local.ls
+      lambda   = local.ls
+      iam      = local.ls
+      sts      = local.ls
+      s3       = local.ls
+    }
   }
 }

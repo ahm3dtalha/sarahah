@@ -10,3 +10,4 @@ __pycache__/
 lambda.zip
 test.txt
 volume/
+terraform.tfstate.d/
