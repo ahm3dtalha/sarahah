@@ -151,7 +151,7 @@ resource "aws_instance" "fastapi_server" {
       sleep 20
     done
 
-    docker run -d --restart unless-stopped -p 8000:8000 \
+    docker run -d --restart unless-stopped -p 80:8000 \
       -e AWS_REGION="$REGION" \
       -e USERS_TABLE="${module.users_table.table_name}" \
       -e MESSAGES_TABLE="${module.messages_table.table_name}" \
