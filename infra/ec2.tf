@@ -168,7 +168,7 @@ resource "aws_instance" "fastapi_server" {
       "$ECR_URL/fastapi-app:latest"
 
     docker run -d -p 80:80 --name nginx-proxy --restart unless-stopped \
-      -v /var/run/docker.sock:/tmp/docker.sock:ro \
+      -v ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro \
       jwilder/nginx-proxy
   EOF
 

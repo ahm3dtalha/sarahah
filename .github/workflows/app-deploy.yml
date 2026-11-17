@@ -30,7 +30,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: fastapi-app
-          IMAGE_TAG: latest
+          IMAGE_TAG: V+1
         run: |
           # بناء الصورة بناءً على سياق مجلد التطبيق وملف الـ Dockerfile الموجود هناك
           docker build -f ./application/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./application
