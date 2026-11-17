@@ -1,6 +1,6 @@
 resource "aws_ecr_repository" "app_repo" {
   name                 = "fastapi-app"
-  image_tag_mutability = "MUTABLE"
+  image_tag_mutability = "MUTABLE"             # يحدد امكانية التعديل علي اسماء النطاقات mutable تعني قابل للتعديل
 
   image_scanning_configuration {
     scan_on_push = true

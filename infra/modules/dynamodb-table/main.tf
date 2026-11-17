@@ -8,9 +8,9 @@ locals {
 
 resource "aws_dynamodb_table" "this" {
   name         = var.table_name
-  billing_mode = var.billing_mode
-  hash_key     = var.hash_key
-  range_key    = var.range_key
+  billing_mode = var.billing_mode             # نظام الفوترة  
+  hash_key     = var.hash_key                 # المفتاح الاساسي
+  range_key    = var.range_key                # المفتاح الثانوي ان وجد
 
   dynamic "attribute" {
     for_each = local.attributes
@@ -29,7 +29,7 @@ resource "aws_dynamodb_table" "this" {
     }
   }
   
-  dynamic "ttl" {
+  dynamic "ttl" {                            # ادارة وقت انتهاء الصلاحية ttl
     for_each = var.ttl_enabled ? [1] : []
     content {
       attribute_name = var.ttl_attribute
