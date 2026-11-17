@@ -176,6 +176,7 @@ resource "aws_instance" "fastapi_server" {
     docker run -d --restart unless-stopped -p 80:80 \
       --link fastapi-app:fastapi-app \
       "$ECR_URL/nginx-app:latest"
+      
   EOF
 
   tags = {
