@@ -6,7 +6,6 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 SECRET = os.getenv("JWT_SECRET", "dev-only-change-me")
 bearer = HTTPBearer()
 
-
 def create_token(user_id: str) -> str:
     return jwt.encode({"sub": user_id, "exp": int(time.time()) + 86400}, SECRET, algorithm="HS256")
 
