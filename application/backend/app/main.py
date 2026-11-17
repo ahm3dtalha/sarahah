@@ -14,6 +14,7 @@ from app.auth import create_token, current_user_id
 from app.config import messages_table, users_table, queue_url, sqs
 
 
+
 app = FastAPI(title="Sarahah")
 
 
