@@ -7,9 +7,23 @@ resource "aws_ecr_repository" "app_repo" {
   }
 }
 
+resource "aws_ecr_repository" "app_nginx_repo" {
+  name                 = "nginx-app"
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+  
+}
+
 
 # إخراج رابط المستودع لنستحقه لاحقاً في الـ Workflow
 output "ecr_repository_url" {
   value       = aws_ecr_repository.app_repo.repository_url
   description = "The URL of the ECR repository"
+}
+output "nginx_ecr_repository_url" {
+  value       = aws_ecr_repository.app_nginx_repo.repository_url
+  description = "The URL of the Nginx ECR repository"
 }
