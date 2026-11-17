@@ -30,7 +30,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: fastapi-app
-          ECR_NGINX_REPOSITORY: nginx
+          ECR_NGINX_REPOSITORY: nginx-app
           IMAGE_TAG: latest
         run: |
           # بناء الصورة بناءً على سياق مجلد التطبيق وملف الـ Dockerfile الموجود هناك
