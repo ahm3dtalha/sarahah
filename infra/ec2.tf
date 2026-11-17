@@ -40,14 +40,7 @@ resource "aws_security_group" "ec2_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  ingress {
-    description = "HTTPS"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
+  
   egress {
     from_port   = 0
     to_port     = 0
@@ -166,7 +159,7 @@ resource "aws_instance" "fastapi_server" {
       sleep 20
     done
 
-    docker run -d --restart unless-stopped -p 80:8000 \
+    docker run -d --restart unless-stopped -p 8000:8000 \
       -e AWS_REGION="$REGION" \
       -e USERS_TABLE="${module.users_table.table_name}" \
       -e MESSAGES_TABLE="${module.messages_table.table_name}" \
