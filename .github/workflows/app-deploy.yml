@@ -30,6 +30,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: fastapi-app
+          ECR_NGINX_REPOSITORY: nginx
           IMAGE_TAG: V+1
         run: |
           # بناء الصورة بناءً على سياق مجلد التطبيق وملف الـ Dockerfile الموجود هناك
@@ -37,3 +38,8 @@ jobs:
           
           # دفع الصورة إلى مستودع ECR على AWS
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          
+          # بناء صورة Nginx ودفعها إلى مستودع ECR
+          docker build -f ./nginx/Dockerfile -t $ECR_REGISTRY/$ECR_NGINX_REPOSITORY:$IMAGE_TAG ./nginx
+          docker push $ECR_REGISTRY/$ECR_NGINX_REPOSITORY:$IMAGE_TAG
+          

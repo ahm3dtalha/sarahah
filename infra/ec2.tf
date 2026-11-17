@@ -159,6 +159,12 @@ resource "aws_instance" "fastapi_server" {
       sleep 20
     done
 
+    for i in $(seq 1 30); do
+      docker pull "$ECR_URL/nginx:latest" && break
+      echo "nginx image not ready yet, retrying..."
+      sleep 20
+    done
+
     docker run -d --restart unless-stopped -p 8000:8000 \
       -e AWS_REGION="$REGION" \
       -e USERS_TABLE="${module.users_table.table_name}" \
@@ -167,9 +173,9 @@ resource "aws_instance" "fastapi_server" {
       -e JWT_SECRET="${random_password.jwt_secret.result}" \
       "$ECR_URL/fastapi-app:latest"
 
-    docker run -d -p 80:80 --name nginx-proxy --restart unless-stopped \
-      -v ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro \
-      jwilder/nginx-proxy
+    docker run -d --restart unless-stopped -p 80:80 \
+      --link fastapi-app:fastapi-app \
+      "$ECR_URL/nginx:latest"
   EOF
 
   tags = {

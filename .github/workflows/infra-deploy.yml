@@ -36,7 +36,7 @@ jobs:
             echo "S3 Bucket '$BUCKET_NAME' already exists."
           else
             echo "S3 Bucket '$BUCKET_NAME' does not exist. Creating it now..."
-            if [ "$REGION" = "us-east-1" ]; then
+            if [ "$REGION" = "ap-southeast-2" ]; then
               aws s3api create-bucket --bucket "$BUCKET_NAME"
             else
               aws s3api create-bucket --bucket "$BUCKET_NAME" --region "$REGION" --create-bucket-configuration LocationConstraint="$REGION"
@@ -52,6 +52,8 @@ jobs:
         run: terraform init
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve -var="use_localstack=false" -var="aws_region=ap-southeast-2"
+        run: |
+          terraform apply -auto-approve -var="use_localstack=false" -var="aws_region=ap-southeast-2"
+          echo "Terraform apply completed successfully .."
 
 

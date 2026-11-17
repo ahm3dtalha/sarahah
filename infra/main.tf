@@ -1,3 +1,4 @@
+
 module "users_table" {
   source     = "./modules/dynamodb-table"
   table_name = "sarahah-users"
