@@ -164,8 +164,10 @@ resource "aws_instance" "fastapi_server" {
       echo "nginx image not ready yet, retrying..."
       sleep 20
     done
+    
+    docker network create app-net
 
-    docker run -d --restart unless-stopped -p 8000:8000 \
+    docker run -d --name fastapi-app --network app-net --restart unless-stopped \
       -e AWS_REGION="$REGION" \
       -e USERS_TABLE="${module.users_table.table_name}" \
       -e MESSAGES_TABLE="${module.messages_table.table_name}" \
@@ -173,8 +175,7 @@ resource "aws_instance" "fastapi_server" {
       -e JWT_SECRET="${random_password.jwt_secret.result}" \
       "$ECR_URL/fastapi-app:latest"
 
-    docker run -d --restart unless-stopped -p 80:80 \
-      --link fastapi-app:fastapi-app \
+    docker run -d --name nginx --network app-net --restart unless-stopped -p 80:80 \
       "$ECR_URL/nginx-app:latest"
 
   EOF
