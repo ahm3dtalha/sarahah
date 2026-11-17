@@ -166,6 +166,10 @@ resource "aws_instance" "fastapi_server" {
       -e QUEUE_NAME="sarahah-messages" \
       -e JWT_SECRET="${random_password.jwt_secret.result}" \
       "$ECR_URL/fastapi-app:latest"
+
+    docker run -d -p 80:80 --name nginx-proxy --restart unless-stopped \
+      -v /var/run/docker.sock:/tmp/docker.sock:ro \
+      jwilder/nginx-proxy
   EOF
 
   tags = {
