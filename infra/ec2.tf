@@ -160,7 +160,7 @@ resource "aws_instance" "fastapi_server" {
     done
 
     for i in $(seq 1 30); do
-      docker pull "$ECR_URL/nginx:latest" && break
+      docker pull "$ECR_URL/nginx-app:latest" && break
       echo "nginx image not ready yet, retrying..."
       sleep 20
     done
@@ -176,7 +176,7 @@ resource "aws_instance" "fastapi_server" {
     docker run -d --restart unless-stopped -p 80:80 \
       --link fastapi-app:fastapi-app \
       "$ECR_URL/nginx-app:latest"
-      
+
   EOF
 
   tags = {
