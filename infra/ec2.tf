@@ -5,11 +5,22 @@ variable "ssh_cidr" {
 }
 
 data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
 
+variable "ssh_public_key" {
+  type = string
+  description = "public SSH key for EC2 access"
+  
+}
 # سر توقيع جلسات الدخول (JWT): يُولَّد مرة واحدة ويُحفظ في الـ state
 resource "random_password" "jwt_secret" {
   length  = 48
   special = false
+}
+
+resource "aws_key_pair" "deployer" {
+  key_name   = "sarahah-deployer"
+  public_key = file(pathexpand("~/.ssh/sarahah_deployer.pub"))
 }
 
 # 1. Security Group
@@ -125,6 +136,7 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "fastapi_server" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = "t3.micro"
+  key_name               = aws_key_pair.deployer.key_name
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
   iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
 
@@ -138,47 +150,7 @@ resource "aws_instance" "fastapi_server" {
     http_put_response_hop_limit = 2
   }
 
-  user_data = <<-EOF
-    #!/bin/bash
-    exec > >(tee /var/log/app-setup.log) 2>&1
-
-    apt-get update -y
-    apt-get install -y docker.io awscli
-    systemctl enable --now docker
-
-    REGION="${data.aws_region.current.name}"
-    ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-    ECR_URL="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
-
-    aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_URL
-
-    # انتظر وصول الصورة إلى ECR (حتى 10 دقائق)
-    for i in $(seq 1 30); do
-      docker pull "$ECR_URL/fastapi-app:latest" && break
-      echo "image not ready yet, retrying..."
-      sleep 20
-    done
-
-    for i in $(seq 1 30); do
-      docker pull "$ECR_URL/nginx-app:latest" && break
-      echo "nginx image not ready yet, retrying..."
-      sleep 20
-    done
-    
-    docker network create app-net
-
-    docker run -d --name fastapi-app --network app-net --restart unless-stopped \
-      -e AWS_REGION="$REGION" \
-      -e USERS_TABLE="${module.users_table.table_name}" \
-      -e MESSAGES_TABLE="${module.messages_table.table_name}" \
-      -e QUEUE_NAME="sarahah-messages" \
-      -e JWT_SECRET="${random_password.jwt_secret.result}" \
-      "$ECR_URL/fastapi-app:latest"
-
-    docker run -d --name nginx --network app-net --restart unless-stopped -p 80:80 \
-      "$ECR_URL/nginx-app:latest"
-
-  EOF
+  user_data = ""
 
   tags = {
     Name = "FastAPI-EC2-Server"
@@ -194,4 +166,21 @@ resource "aws_eip" "fastapi" {
 output "ec2_public_ip" {
   value       = aws_eip.fastapi.public_ip
   description = "Public IP address of the EC2 instance"
+}
+
+output "users_table_name" {
+  value = module.users_table.table_name
+}
+
+output "messages_table_name" {
+  value = module.messages_table.table_name
+}
+
+output "ecr_base_url" {
+  value = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com"
+}
+
+output "jwt_secret" {
+  value     = random_password.jwt_secret.result
+  sensitive = true
 }

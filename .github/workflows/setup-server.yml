@@ -1,0 +1,84 @@
+name: Setup Server
+
+on:
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  TF_WORKING_DIR: terraform
+
+jobs:
+  configure-server:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform init
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform init -input=false
+
+      # جلب الـ outputs دون طباعة JWT_SECRET في السجل
+      - name: Read Terraform outputs
+        id: tf
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: |
+          JWT=$(terraform output -raw jwt_secret)
+          echo "::add-mask::$JWT"
+          {
+            echo "ip=$(terraform output -raw ec2_public_ip)"
+            echo "users_table=$(terraform output -raw users_table_name)"
+            echo "messages_table=$(terraform output -raw messages_table_name)"
+            echo "ecr_base=$(terraform output -raw ecr_base_url)"
+            echo "jwt_secret=$JWT"
+          } >> "$GITHUB_OUTPUT"
+          echo "🌐 EC2 IP: $(terraform output -raw ec2_public_ip)"
+
+      - name: Prepare SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ steps.tf.outputs.ip }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      # نبني ملف env على الـ runner ثم ننسخه (لا يظهر في cmdline)
+      - name: Build env file
+        run: |
+          cat > /tmp/sarahah.env <<EOF
+          AWS_REGION=${{ env.AWS_REGION }}
+          ECR_BASE=${{ steps.tf.outputs.ecr_base }}
+          USERS_TABLE=${{ steps.tf.outputs.users_table }}
+          MESSAGES_TABLE=${{ steps.tf.outputs.messages_table }}
+          QUEUE_NAME=sarahah-messages
+          JWT_SECRET=${{ steps.tf.outputs.jwt_secret }}
+          EOF
+          chmod 600 /tmp/sarahah.env
+
+      - name: Copy setup.sh & env to server
+        run: |
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
+            scripts/setup.sh /tmp/sarahah.env \
+            ${{ secrets.SSH_USER }}@${{ steps.tf.outputs.ip }}:/tmp/
+
+      - name: Run setup.sh remotely
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
+            ${{ secrets.SSH_USER }}@${{ steps.tf.outputs.ip }} \
+            "chmod 600 /tmp/sarahah.env && \
+             set -a && source /tmp/sarahah.env && set +a && \
+             chmod +x /tmp/setup.sh && bash /tmp/setup.sh; \
+             rc=\$?; shred -u /tmp/sarahah.env 2>/dev/null || rm -f /tmp/sarahah.env; exit \$rc"
+
+      - name: Cleanup local env
+        if: always()
+        run: rm -f /tmp/sarahah.env ~/.ssh/deploy_key

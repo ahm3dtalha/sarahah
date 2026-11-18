@@ -52,8 +52,11 @@ jobs:
         run: terraform init
 
       - name: Terraform Apply
+        env:
+          TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
         run: |
           terraform apply -auto-approve -var="use_localstack=false" -var="aws_region=ap-southeast-2"
           echo "Terraform apply completed successfully .."
+
 
 
