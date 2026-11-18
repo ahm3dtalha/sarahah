@@ -3,6 +3,18 @@ name: Deploy Setup To Server
 on:
   workflow_dispatch:
 
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/**'
+      - '.github/workflows/setup-server.yml'
+    
+  workflow_run:
+    workflows: ["Deploy Infrastructure"]
+    types:
+      - completed
+
 env:
   AWS_REGION: ap-southeast-2
   TF_WORKING_DIR: infra
@@ -10,6 +22,7 @@ env:
 
 jobs:
   configure-server:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' && github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
