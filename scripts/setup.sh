@@ -95,15 +95,61 @@ deploy_app() {
     "$ECR_BASE/nginx-app:latest"
 }
 
-# ---------- Main ----------
+# أضف هذه الدالة قبل الـ main
+deploy_monitoring() {
+  log "→ Deploying monitoring stack..."
+
+  # 1. Node Exporter (بيانات السيرفر)
+  pull_image "prom/node-exporter:latest"
+  recreate_container node-exporter \
+    -p 9100:9100 \
+    --pid="host" \
+    -v "/:/host:ro,rslave" \
+    "prom/node-exporter:latest" \
+    --path.rootfs=/host
+
+  # 2. cAdvisor (بيانات الحاويات)
+  pull_image "gcr.io/cadvisor/cadvisor:latest"
+  recreate_container cadvisor \
+    -p 8080:8080 \
+    -v "/:/rootfs:ro" \
+    -v "/var/run:/var/run:ro" \
+    -v "/sys:/sys:ro" \
+    -v "/var/lib/docker/:/var/lib/docker:ro" \
+    -v "/dev/disk/:/dev/disk:ro" \
+    --privileged \
+    --device=/dev/kmsg \
+    "gcr.io/cadvisor/cadvisor:latest"
+
+  # 3. Prometheus (المخ)
+  pull_image "prom/prometheus:latest"
+  # نسخ ملف الإعدادات الذي سنرفعه للسيرفر عبر الـ Pipeline
+  sudo mkdir -p /opt/monitoring
+  sudo cp /tmp/prometheus.yml /opt/monitoring/prometheus.yml
+  
+  recreate_container prometheus \
+    -p 9090:9090 \
+    -v "/opt/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro" \
+    "prom/prometheus:latest"
+
+  # 4. Grafana (الشاشة)
+  pull_image "grafana/grafana:latest"
+  recreate_container grafana \
+    -p 3000:3000 \
+    -e "GF_SECURITY_ADMIN_PASSWORD=admin" \
+    -e "GF_USERS_ALLOW_SIGN_UP=false" \
+    "grafana/grafana:latest"
+}
+
+# قم بتعديل الـ main ليصبح هكذا:
 main() {
   log "🚀 Starting sarahah setup..."
   install_dependencies
   login_ecr
   ensure_network
   deploy_app
-  log "✅ Setup complete. Containers:"
+  deploy_monitoring   # <--- أضف هذا السطر
+  log "✅ Setup complete."
   sudo docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
 }
-
 main "$@"

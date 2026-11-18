@@ -19,6 +19,7 @@ env:
   AWS_REGION: ap-southeast-2
   TF_WORKING_DIR: infra
   SETUP_SCRIPT: scripts/setup.sh   # تحقق من مسار الملف بعد إعادة الترتيب
+  PROMETHEUS_CONFIG: monitoring/prometheus.yml
 
 jobs:
   configure-server:
@@ -116,7 +117,7 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
         run: |
           scp -i ~/.ssh/deploy_key -o BatchMode=yes \
-            "$SETUP_SCRIPT" /tmp/sarahah.env \
+            "$SETUP_SCRIPT" /tmp/sarahah.env "$PROMETHEUS_CONFIG" \
             "$SSH_USER@$EC2_IP:/tmp/"
 
       - name: Run setup.sh remotely
