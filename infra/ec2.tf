@@ -20,7 +20,7 @@ resource "random_password" "jwt_secret" {
 
 resource "aws_key_pair" "deployer" {
   key_name   = "sarahah-deployer"
-  public_key = file(pathexpand("~/.ssh/sarahah_deployer.pub"))
+  public_key = var.ssh_public_key
 }
 
 # 1. Security Group
