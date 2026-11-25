@@ -148,7 +148,7 @@ main() {
   login_ecr
   ensure_network
   deploy_app
-  deploy_monitoring   # <--- أضف هذا السطر
+  #deploy_monitoring   # <--- أضف هذا السطر
   log "✅ Setup complete."
   sudo docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
 }
