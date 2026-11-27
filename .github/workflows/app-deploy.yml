@@ -8,6 +8,11 @@ on:
       - 'application/**'
       - '.github/workflows/app-deploy.yml'
 
+  workflow_run:
+    workflows: ["Deploy Infrastructure"]
+    types:
+      - completed
+      
 jobs:
   build-and-push-app:
     runs-on: ubuntu-latest
