@@ -139,17 +139,17 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
         run: |
           ssh -i ~/.ssh/deploy_key -o BatchMode=yes "$SSH_USER@$EC2_IP" 'bash -s' << 'EOF'
-              chmod 600 /tmp/sarahah.env
-              set -a
-              . /tmp/sarahah.env
-              set +a
+            chmod 600 /tmp/sarahah.env
+            set -a
+            . /tmp/sarahah.env
+            set +a
 
-              chmod +x /tmp/setup.sh
-              bash /tmp/setup.sh
-              rc=$?
+            chmod +x /tmp/setup.sh
+            bash /tmp/setup.sh
+            rc=$?
 
-              shred -u /tmp/sarahah.env 2>/dev/null || rm -f /tmp/sarahah.env
-              exit $rc
+            shred -u /tmp/sarahah.env 2>/dev/null || rm -f /tmp/sarahah.env
+            exit $rc
           EOF
           
 
