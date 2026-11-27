@@ -104,6 +104,8 @@ jobs:
           JWT_SECRET: ${{ steps.tf.outputs.jwt_secret }}
           ENABLE_MONITORING: ${{ vars.ENABLE_MONITORING }}
           GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+          DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
+          SSL_EMAIL: ${{ vars.SSL_EMAIL }}
         run: |
           umask 077
           cat > /tmp/sarahah.env <<EOF
@@ -115,6 +117,8 @@ jobs:
           JWT_SECRET=${JWT_SECRET}
           ENABLE_MONITORING=${ENABLE_MONITORING}
           GRAFANA_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+          DOMAIN_NAME=${DOMAIN_NAME}
+          SSL_EMAIL=${SSL_EMAIL}
           EOF
 
       - name: Copy setup.sh & env to server

@@ -20,6 +20,8 @@ set -euo pipefail
 : "${MESSAGES_TABLE:?MESSAGES_TABLE is required}"
 : "${QUEUE_NAME:?QUEUE_NAME is required}"
 : "${JWT_SECRET:?JWT_SECRET is required}"
+: "${DOMAIN_NAME:?DOMAIN_NAME is required}"
+: "${SSL_EMAIL:?SSL_EMAIL is required}"
 
 ENABLE_MONITORING="${ENABLE_MONITORING:-false}"
 APP_DIR=/opt/sarahah
@@ -113,10 +115,29 @@ deploy() {
   sudo docker compose "${profile[@]}" up -d --remove-orphans
 }
 
+# ------------ssl certificate ----------------------
+setup_ssl_certificate() {
+  log "-> Setting up SSL certificate with certbot..."
+  sudo apt-get install -y certbot python3-certbot-nginx
+
+  cd /opt/sarahah
+  if [-d "./certbot/conf/live/${DOMAIN_NAME}"];then
+  log " SSL Certificate already exites "
+  else
+    log "-> Requesting new SSL Certificate "
+    
+    docker compose run --rm certbot certonly --webroot \
+     -w /var/www/certbot \
+     -d "${DOMAIN_NAME}" \
+     --email "${SSL_EMAIL}" \
+     --agree-tos --no-eff-email
+  log "-> Reloading Nginx ... "
+  docker compose exec nginx -s reload
+
 # ---------- 6. Health check through nginx ----------
 wait_healthy() {
   log "-> Waiting for http://localhost/health ..."
-  for _ in $(seq 1 60); do
+  for _ in $(seq 1 120); do
     if curl -fsS http://localhost/health >/dev/null 2>&1; then
       log "OK: the app answers through nginx."
       return 0
@@ -136,6 +157,7 @@ main() {
   prepare_files
   remove_legacy_containers
   deploy
+  setup_ssl_certificate
   wait_healthy
   sudo docker image prune -f >/dev/null
   log "Setup complete."
