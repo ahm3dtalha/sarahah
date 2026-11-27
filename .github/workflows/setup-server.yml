@@ -150,7 +150,7 @@ jobs:
 
             shred -u /tmp/sarahah.env 2>/dev/null || rm -f /tmp/sarahah.env
             exit $rc
-            EOF
+          EOF
           
 
       - name: Cleanup local env
