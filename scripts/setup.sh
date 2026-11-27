@@ -131,9 +131,10 @@ setup_ssl_certificate() {
      -d "${DOMAIN_NAME}" \
      --email "${SSL_EMAIL}" \
      --agree-tos --no-eff-email
-  log "-> Reloading Nginx ... "
-  docker compose exec nginx -s reload
+    log "-> Reloading Nginx ... "
+    docker compose exec nginx -s reload
   fi
+}
 
 # ---------- 6. Health check through nginx ----------
 wait_healthy() {
