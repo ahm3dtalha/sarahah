@@ -118,19 +118,20 @@ deploy() {
 # ------------ssl certificate ----------------------
 setup_ssl_certificate() {
   log "-> Setting up SSL certificate with certbot..."
-  sudo apt-get install -y certbot python3-certbot-nginx
-
+  
   cd /opt/sarahah
   if [ -d "./certbot/conf/live/${DOMAIN_NAME}" ]; then
   log " SSL Certificate already exites "
   else
     log "-> Requesting new SSL Certificate "
     
-    sudo docker compose run --rm certbot certonly --webroot \
-     -w /var/www/certbot \
-     -d "${DOMAIN_NAME}" \
-     --email "${SSL_EMAIL}" \
-     --agree-tos --no-eff-email
+    sudo docker compose run --rm \
+      --endpoint certbot certonly \
+      --webroot \
+      -w /var/www/certbot \
+      -d "${DOMAIN_NAME}" \
+      --email "${SSL_EMAIL}" \
+      --agree-tos --no-eff-email
     log "-> Reloading Nginx ... "
     sudo docker compose exec nginx -s reload
   fi
