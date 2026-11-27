@@ -126,13 +126,13 @@ setup_ssl_certificate() {
   else
     log "-> Requesting new SSL Certificate "
     
-    docker compose run --rm certbot certonly --webroot \
+    sudo docker compose run --rm certbot certonly --webroot \
      -w /var/www/certbot \
      -d "${DOMAIN_NAME}" \
      --email "${SSL_EMAIL}" \
      --agree-tos --no-eff-email
     log "-> Reloading Nginx ... "
-    docker compose exec nginx -s reload
+    sudo docker compose exec nginx -s reload
   fi
 }
 
