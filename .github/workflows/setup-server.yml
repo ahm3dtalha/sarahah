@@ -11,9 +11,10 @@ on:
       - '.github/workflows/setup-server.yml'
     
   workflow_run:
-    workflows: ["Deploy Infrastructure"]
+    workflows: ["Deploy Infrastructure ","Deploy FastAPI App to ECR"]
     types:
       - completed
+    
 
 env:
   AWS_REGION: ap-southeast-2
