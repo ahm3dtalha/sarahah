@@ -126,7 +126,7 @@ setup_ssl_certificate() {
     log "-> Requesting new SSL Certificate "
     
     sudo docker compose run --rm \
-      --endpoint certbot certonly \
+      --entrypoint certbot certonly \
       --webroot \
       -w /var/www/certbot \
       -d "${DOMAIN_NAME}" \
