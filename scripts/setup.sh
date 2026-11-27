@@ -121,7 +121,7 @@ setup_ssl_certificate() {
   sudo apt-get install -y certbot python3-certbot-nginx
 
   cd /opt/sarahah
-  if [-d "./certbot/conf/live/${DOMAIN_NAME}"];then
+  if [ -d "./certbot/conf/live/${DOMAIN_NAME}" ]; then
   log " SSL Certificate already exites "
   else
     log "-> Requesting new SSL Certificate "
