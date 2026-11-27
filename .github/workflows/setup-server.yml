@@ -20,7 +20,7 @@ env:
   TF_WORKING_DIR: infra
   SETUP_SCRIPT: scripts/setup.sh   # تحقق من مسار الملف بعد إعادة الترتيب
   PROMETHEUS_CONFIG: deploy/monitoring/prometheus.yml
-  DEBLOY_CONFIG: debloy/docker-compose.prod.yml
+  DEBLOY_CONFIG: deploy/docker-compose.prod.yml
 
 jobs:
   configure-server:
