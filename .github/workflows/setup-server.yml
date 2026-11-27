@@ -147,7 +147,7 @@ jobs:
             chmod +x /tmp/setup.sh
             bash /tmp/setup.sh
             rc=$?
-
+            
             shred -u /tmp/sarahah.env 2>/dev/null || rm -f /tmp/sarahah.env
             exit $rc
           EOF
