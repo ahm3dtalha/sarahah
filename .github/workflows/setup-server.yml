@@ -134,7 +134,7 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
         run: |
           ssh -i ~/.ssh/deploy_key -o BatchMode=yes "$SSH_USER@$EC2_IP" 'bash -s' << 'EOF'
-            'chmod 600 /tmp/sarahah.env
+            chmod 600 /tmp/sarahah.env
             set -a
             . /tmp/sarahah.env
             set +a
