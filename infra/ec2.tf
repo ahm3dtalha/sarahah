@@ -87,6 +87,7 @@ resource "aws_iam_role" "ec2_execution_role" {
   })
 }
 
+
 # قراءة الصور من ECR
 resource "aws_iam_role_policy_attachment" "ec2_ecr_policy" {
   role       = aws_iam_role.ec2_execution_role.name

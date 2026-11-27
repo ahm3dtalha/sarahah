@@ -19,7 +19,8 @@ env:
   AWS_REGION: ap-southeast-2
   TF_WORKING_DIR: infra
   SETUP_SCRIPT: scripts/setup.sh   # تحقق من مسار الملف بعد إعادة الترتيب
-  PROMETHEUS_CONFIG: monitoring/prometheus.yml
+  PROMETHEUS_CONFIG: deploy/monitoring/prometheus.yml
+  DEBLOY_CONFIG: debloy/docker-compose.prod.yml
 
 jobs:
   configure-server:
@@ -100,6 +101,8 @@ jobs:
           USERS_TABLE: ${{ steps.tf.outputs.users_table }}
           MESSAGES_TABLE: ${{ steps.tf.outputs.messages_table }}
           JWT_SECRET: ${{ steps.tf.outputs.jwt_secret }}
+          ENABLE_MONITORING: ${{ vars.ENABLE_MONITORING }}
+          GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
         run: |
           umask 077
           cat > /tmp/sarahah.env <<EOF
@@ -109,6 +112,8 @@ jobs:
           MESSAGES_TABLE=${MESSAGES_TABLE}
           QUEUE_NAME=sarahah-messages
           JWT_SECRET=${JWT_SECRET}
+          ENABLE_MONITORING=${ENABLE_MONITORING}
+          GRAFANA_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
           EOF
 
       - name: Copy setup.sh & env to server
@@ -117,7 +122,10 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
         run: |
           scp -i ~/.ssh/deploy_key -o BatchMode=yes \
-            "$SETUP_SCRIPT" /tmp/sarahah.env "$PROMETHEUS_CONFIG" \
+            "$SETUP_SCRIPT" \
+            "$PROMETHEUS_CONFIG" \
+            "$DEBLOY_CONFIG" \
+            /tmp/sarahah.env \
             "$SSH_USER@$EC2_IP:/tmp/"
 
       - name: Run setup.sh remotely
@@ -125,8 +133,20 @@ jobs:
           EC2_IP: ${{ steps.tf.outputs.ip }}
           SSH_USER: ${{ secrets.SSH_USER }}
         run: |
-          ssh -i ~/.ssh/deploy_key -o BatchMode=yes "$SSH_USER@$EC2_IP" \
-            'chmod 600 /tmp/sarahah.env; set -a; . /tmp/sarahah.env; set +a; chmod +x /tmp/setup.sh; bash /tmp/setup.sh; rc=$?; shred -u /tmp/sarahah.env 2>/dev/null || rm -f /tmp/sarahah.env; exit $rc'
+          ssh -i ~/.ssh/deploy_key -o BatchMode=yes "$SSH_USER@$EC2_IP" 'bash -s' << 'EOF'
+            'chmod 600 /tmp/sarahah.env
+            set -a
+            . /tmp/sarahah.env
+            set +a
+
+            chmod +x /tmp/setup.sh
+            bash /tmp/setup.sh
+            rc=$?
+
+            shred -u /tmp/sarahah.env 2>/dev/null || rm -f /tmp/sarahah.env
+            exit $rc
+            EOF
+          
 
       - name: Cleanup local env
         if: always()
