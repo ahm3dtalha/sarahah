@@ -104,8 +104,8 @@ jobs:
           JWT_SECRET: ${{ steps.tf.outputs.jwt_secret }}
           ENABLE_MONITORING: ${{ vars.ENABLE_MONITORING }}
           GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
-          DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
-          SSL_EMAIL: ${{ vars.SSL_EMAIL }}
+          DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+          SSL_EMAIL: ${{ secrets.SSL_EMAIL }}
         run: |
           umask 077
           cat > /tmp/sarahah.env <<EOF
