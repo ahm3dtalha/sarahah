@@ -49,4 +49,16 @@
     .catch(e => { if (e.status === 401) out(); });
 })();
 
-<footer class="site" data-i18n="foot"></footer>
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (!document.querySelector(".site-footer")) {
+    const footer = document.createElement("footer");
+    
+    footer.className = "site-footer";
+    footer.innerHTML = `
+      <footer class="site" data-i18n="foot"></footer>
+    `;
+    document.body.appendChild(footer);
+  }
+});
