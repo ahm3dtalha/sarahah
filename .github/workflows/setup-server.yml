@@ -22,6 +22,8 @@ env:
   SETUP_SCRIPT: scripts/setup.sh   # تحقق من مسار الملف بعد إعادة الترتيب
   PROMETHEUS_CONFIG: deploy/monitoring/prometheus.yml
   DEBLOY_CONFIG: deploy/docker-compose.prod.yml
+  HTTP_CONFIG: deploy/nginx/http.conf
+  HTTPS_CONFIG: deploy/nginx/https.conf
 
 jobs:
   configure-server:
@@ -130,6 +132,8 @@ jobs:
             "$SETUP_SCRIPT" \
             "$PROMETHEUS_CONFIG" \
             "$DEBLOY_CONFIG" \
+            "$HTTP_CONFIG" \
+            "$HTTPS_CONFIG" \
             /tmp/sarahah.env \
             "$SSH_USER@$EC2_IP:/tmp/"
 
