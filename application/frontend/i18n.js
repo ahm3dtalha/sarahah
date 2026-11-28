@@ -10,7 +10,7 @@ const T = {
     f2t: "بلا تسجيل للمرسل", f2d: "أي شخص يكتب لك دون أن ينشئ حسابًا.",
     f3t: "لوحة خاصة بك", f3d: "رسائلك في مكان واحد لا يراه غيرك.",
     h_t: "ثلاث خطوات فقط", s1: "أنشئ حسابك", s2: "شارك رابطك", s3: "اقرأ الرسائل",
-    foot: "صراحة © 2026، مشروع تعليمي",
+    foot: "© 2026 صراحة (Sarahah) — تطوير أحمد طلحه. جميع الحقوق محفوظة.",
     tag: "استقبل رسائل صريحة من أشخاص لا تعرفهم.",
     tab_l: "دخول", tab_r: "حساب جديد", l_u: "اسم المستخدم", l_e: "البريد الإلكتروني",
     l_p: "كلمة المرور", sub_l: "دخول", sub_r: "إنشاء الحساب", back: "← الرئيسية",
@@ -27,11 +27,11 @@ const T = {
     f2t: "No sign-up for senders", f2d: "Anyone can write to you without creating an account.",
     f3t: "Your own dashboard", f3d: "All your messages in one place, visible only to you.",
     h_t: "Just three steps", s1: "Create your account", s2: "Share your link", s3: "Read your messages",
-    foot: "Sarahah © 2026, a learning project",
+    foot: "© 2026 Sarahah — Developed by Ahmed Talha. All rights reserved .",
     tag: "Receive honest messages from people you don’t know.",
     tab_l: "Log in", tab_r: "Sign up", l_u: "Username", l_e: "Email",
     l_p: "Password", sub_l: "Log in", sub_r: "Create account", back: "← Home",
-    footer_rights: "© 2026 Sarahah — Developed by Ahmed Talha. All rights reserved."
+    footer_rights: "© 2026 Sarahah — Developed by Ahmed Talha. All rights reserved ."
   }
 };
 

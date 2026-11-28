@@ -49,15 +49,4 @@
     .catch(e => { if (e.status === 401) out(); });
 })();
 
-document.addEventListener("DOMContentLoaded", () => {
-  if (!document.querySelector(".site-footer")) {
-    const footer = document.createElement("footer");
-    footer.className = "site-footer";
-    footer.innerHTML = `
-      <p data-i18n="footer_rights">
-        © 2026 صراحة (Sarahah) — تطوير <a href="https://github.com/ahmdtalha" target="_blank" rel="noopener">أحمد طلحة</a>. جميع الحقوق محفوظة.
-      </p>
-    `;
-    document.body.appendChild(footer);
-  }
-});
+<footer class="site" data-i18n="foot"></footer>
