@@ -132,8 +132,8 @@ jobs:
             "$SETUP_SCRIPT" \
             "$PROMETHEUS_CONFIG" \
             "$DEBLOY_CONFIG" \
-            "$HTTP_CONFIG" \
             "$HTTPS_CONFIG" \
+            "$HTTP_CONFIG" \
             /tmp/sarahah.env \
             "$SSH_USER@$EC2_IP:/tmp/"
 
