@@ -132,8 +132,7 @@ setup_ssl_certificate() {
       -w /var/www/certbot \
       -d "${DOMAIN_NAME}" \
       --email "${SSL_EMAIL}" \
-      --agree-tos --no-eff-email
-      --staging # Remove this line in production
+      --agree-tos --no-eff-email --staging
     log "-> Reloading Nginx ... "
     sudo docker compose exec nginx -s reload
   fi
