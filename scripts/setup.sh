@@ -81,6 +81,7 @@ prepare_files() {
   sudo mkdir -p "$APP_DIR/nginx/conf.d" "$APP_DIR/certbot/www"
   sudo install -m 644 /tmp/http.conf  "$APP_DIR/nginx/http.conf"
   sudo install -m 644 /tmp/https.conf "$APP_DIR/nginx/https.conf"
+  
   if sudo test -d "$certbot/conf/live/${DOMAIN_NAME}"; then
     log "OK: certificate already exists"
     sudo install -m 644 /tmp/https.conf "$APP_DIR/nginx/conf.d/default.conf"
