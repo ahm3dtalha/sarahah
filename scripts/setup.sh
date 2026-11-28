@@ -78,11 +78,11 @@ prepare_files() {
   sudo install -m 644 /tmp/docker-compose.prod.yml "$APP_DIR/docker-compose.yml"
   sudo install -m 600 /tmp/sarahah.env "$APP_DIR/.env"
 
-  sudo mkdir -p /opt/sarahah/nginx/conf.d /opt/sarahah/certbot/www
-  sudo install -m 644 /tmp/http.conf  /opt/sarahah/nginx/http.conf
-  sudo install -m 644 /tmp/https.conf /opt/sarahah/nginx/https.conf
-  sudo test -f /opt/sarahah/nginx/conf.d/default.conf \
-  || sudo install -m 644 /tmp/http.conf /opt/sarahah/nginx/conf.d/default.conf
+  sudo mkdir -p $APP_DIR/nginx/conf.d $APP_DIR/certbot/www
+  sudo install -m 644 /tmp/http.conf  $APP_DIR/nginx/http.conf
+  sudo install -m 644 /tmp/https.conf $APP_DIR/nginx/https.conf
+  sudo test -f $APP_DIR/nginx/conf.d/default.conf \
+  || sudo install -m 644 /tmp/http.conf $APP_DIR/nginx/conf.d/default.conf
 
   if [ "$ENABLE_MONITORING" = "true" ]; then
     : "${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD is required when monitoring is enabled}"
