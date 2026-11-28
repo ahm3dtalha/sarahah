@@ -133,6 +133,7 @@ setup_ssl_certificate() {
       -d "${DOMAIN_NAME}" \
       --email "${SSL_EMAIL}" \
       --agree-tos --no-eff-email
+      --staging # Remove this line in production
     log "-> Reloading Nginx ... "
     sudo docker compose exec nginx -s reload
   fi
