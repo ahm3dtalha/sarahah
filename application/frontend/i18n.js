@@ -13,7 +13,8 @@ const T = {
     foot: "صراحة © 2026، مشروع تعليمي",
     tag: "استقبل رسائل صريحة من أشخاص لا تعرفهم.",
     tab_l: "دخول", tab_r: "حساب جديد", l_u: "اسم المستخدم", l_e: "البريد الإلكتروني",
-    l_p: "كلمة المرور", sub_l: "دخول", sub_r: "إنشاء الحساب", back: "← الرئيسية"
+    l_p: "كلمة المرور", sub_l: "دخول", sub_r: "إنشاء الحساب", back: "← الرئيسية",
+    footer_rights: "© 2026 صراحة (Sarahah) — تطوير أحمد طلحه. جميع الحقوق محفوظة."
   },
   en: {
     login: "Log in", dash: "Dashboard", nav_f: "Features", nav_h: "How it works",
@@ -29,7 +30,8 @@ const T = {
     foot: "Sarahah © 2026, a learning project",
     tag: "Receive honest messages from people you don’t know.",
     tab_l: "Log in", tab_r: "Sign up", l_u: "Username", l_e: "Email",
-    l_p: "Password", sub_l: "Log in", sub_r: "Create account", back: "← Home"
+    l_p: "Password", sub_l: "Log in", sub_r: "Create account", back: "← Home",
+    footer_rights: "© 2026 Sarahah — Developed by Ahmed Talha. All rights reserved."
   }
 };
 
