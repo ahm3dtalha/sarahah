@@ -22,8 +22,8 @@ env:
   SETUP_SCRIPT: scripts/setup.sh   # تحقق من مسار الملف بعد إعادة الترتيب
   PROMETHEUS_CONFIG: deploy/monitoring/prometheus.yml
   DEBLOY_CONFIG: deploy/docker-compose.prod.yml
-  HTTP_CONFIG: deploy/nginx/http.conf
-  HTTPS_CONFIG: deploy/nginx/https.conf
+  HTTP_CONFIG: nginx/http.conf
+  HTTPS_CONFIG: nginx/https.conf
 
 jobs:
   configure-server:
