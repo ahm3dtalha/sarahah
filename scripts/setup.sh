@@ -78,6 +78,12 @@ prepare_files() {
   sudo install -m 644 /tmp/docker-compose.prod.yml "$APP_DIR/docker-compose.yml"
   sudo install -m 600 /tmp/sarahah.env "$APP_DIR/.env"
 
+  sudo mkdir -p /opt/sarahah/nginx/conf.d /opt/sarahah/certbot/www
+  sudo install -m 644 /tmp/http.conf  /opt/sarahah/nginx/http.conf
+  sudo install -m 644 /tmp/https.conf /opt/sarahah/nginx/https.conf
+  sudo test -f /opt/sarahah/nginx/conf.d/default.conf \
+  || sudo install -m 644 /tmp/http.conf /opt/sarahah/nginx/conf.d/default.conf
+
   if [ "$ENABLE_MONITORING" = "true" ]; then
     : "${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD is required when monitoring is enabled}"
     [ -f /tmp/prometheus.yml ] || die "/tmp/prometheus.yml not found"
@@ -118,23 +124,23 @@ deploy() {
 # ------------ssl certificate ----------------------
 setup_ssl_certificate() {
   log "-> Setting up SSL certificate with certbot..."
-  
   cd /opt/sarahah
-  if [ -d "./certbot/conf/live/${DOMAIN_NAME}" ]; then
-  log " SSL Certificate already exites "
+
+  if sudo test -d "certbot/conf/live/${DOMAIN_NAME}"; then
+    log "OK: certificate already exists"
   else
-    log "-> Requesting new SSL Certificate "
-    
-    sudo docker compose run --rm \
-      --entrypoint certbot \
-      certbot certonly \
-      --webroot \
-      -w /var/www/certbot \
-      -d "${DOMAIN_NAME}" \
-      --email "${SSL_EMAIL}" \
-      --agree-tos --no-eff-email --staging
-    log "-> Reloading Nginx ... "
-    sudo docker compose exec nginx -s reload
+    log "-> Requesting new certificate..."
+    sudo docker compose run --rm -T --entrypoint certbot certbot certonly \
+      --webroot -w /var/www/certbot \
+      -d "${DOMAIN_NAME}" --email "${SSL_EMAIL}" \
+      --agree-tos --no-eff-email ${CERTBOT_FLAGS:-}
+  fi
+
+  if sudo test -d "certbot/conf/live/${DOMAIN_NAME}"; then
+    log "-> Switching nginx to HTTPS config..."
+    sudo install -m 644 nginx/https.conf nginx/conf.d/default.conf
+    sudo docker compose exec -T nginx nginx -t
+    sudo docker compose exec -T nginx nginx -s reload
   fi
 }
 
@@ -142,7 +148,7 @@ setup_ssl_certificate() {
 wait_healthy() {
   log "-> Waiting for http://localhost/health ..."
   for _ in $(seq 1 120); do
-    if curl -fsS http://localhost/health >/dev/null 2>&1; then
+    if curl -fsSkL http://localhost/health >/dev/null 2>&1; then
       log "OK: the app answers through nginx."
       return 0
     fi
